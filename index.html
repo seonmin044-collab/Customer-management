@@ -23,14 +23,17 @@
 
         <!-- 구글 이미지 검색 영역 -->
         <div class="image-search-group">
-            <label>사진으로 검색:</label>
-            <!-- 구글 이미지 검색으로 전송할 숨겨진 폼 -->
+            <label>사진으로 검색 (구글 렌즈):</label>
             <form id="google-image-search-form" action="https://www.google.com/searchbyimage/upload" method="POST" enctype="multipart/form-data" target="_blank">
-                <input type="file" name="encoded_image" id="image-upload" accept="image/*" style="display: none;" onchange="this.form.submit()">
-                <button type="button" id="camera-button" onclick="document.getElementById('image-upload').click()">
-                    📷 구글 이미지에서 사진 찾기
+                <!-- 파일 선택 시 자동으로 폼이 제출되도록 수정 -->
+                <input type="file" name="encoded_image" id="image-upload" accept="image/*" style="display: none;">
+                <button type="button" id="camera-button" onclick="triggerImageSearch()">
+                    📷 사진 선택하여 구글에서 찾기
                 </button>
             </form>
+            <p id="image-loading-msg" style="display:none; font-size: 12px; color: #4285f4; margin-top: 5px;">
+                구글로 이미지를 전송 중입니다. 새 창이 열리지 않으면 팝업 차단을 확인해 주세요.
+            </p>
         </div>
     </div>
 

@@ -9,7 +9,30 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // 사진 검색 input 이벤트 리스너 추가
+    const imageInput = document.getElementById('image-upload');
+    if (imageInput) {
+        imageInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const loadingMsg = document.getElementById('image-loading-msg');
+                if (loadingMsg) loadingMsg.style.display = 'block';
+                
+                // 폼 수동 제출
+                document.getElementById('google-image-search-form').submit();
+                
+                // 전송 후 안내 문구 변경
+                setTimeout(() => {
+                    if (loadingMsg) loadingMsg.innerText = '구글 검색 결과창이 열렸습니다. (새 창 확인)';
+                }, 2000);
+            }
+        });
+    }
 });
+
+function triggerImageSearch() {
+    document.getElementById('image-upload').click();
+}
 
 async function searchProduct() {
     const query = document.getElementById('product-name').value.trim();
