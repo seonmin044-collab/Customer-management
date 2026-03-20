@@ -120,14 +120,14 @@ hr {
     z-index: 1000;
 }
 
-/* 모달 컨텐츠 (크기 축소: 가로 25vw, 세로 15vh) */
+/* 모달 컨텐츠 (가로 축소, 세로 확대: 가로 20vw, 세로 35vh) */
 .modal-content {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 25vw;
-    height: 15vh;
+    width: 20vw;
+    height: 35vh;
     background-color: white;
     padding: 15px;
     border-radius: 8px;
@@ -136,8 +136,8 @@ hr {
     justify-content: center;
     align-items: center;
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    min-width: 220px; /* 최소 너비 약간 축소 */
-    min-height: 120px; /* 최소 높이 약간 축소 */
+    min-width: 180px; /* 가로 최소 크기 축소 */
+    min-height: 250px; /* 세로 최소 크기 확대 */
 }
 
 .modal-content img {
