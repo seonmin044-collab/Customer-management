@@ -11,6 +11,54 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+async function handleImageUpload(input) {
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const loadingMsg = document.getElementById('loading-msg');
+        const productNameInput = document.getElementById('product-name');
+        
+        loadingMsg.style.display = 'block';
+        loadingMsg.innerText = '사진을 분석하고 있습니다... (처음엔 시간이 조금 걸릴 수 있습니다)';
+        
+        try {
+            // Tesseract.js를 사용하여 이미지에서 텍스트 추출 (한국어 + 영어)
+            const result = await Tesseract.recognize(
+                file,
+                'kor+eng', 
+                { 
+                    logger: m => {
+                        if (m.status === 'recognizing text') {
+                            loadingMsg.innerText = `글자를 읽는 중... ${(m.progress * 100).toFixed(0)}%`;
+                        }
+                    }
+                }
+            );
+
+            const extractedText = result.data.text;
+            console.log('Extracted Text:', extractedText);
+
+            // 추출된 텍스트 정제 (특수문자 제거, 공백 정리 등)
+            // 너무 긴 문장은 검색에 방해가 될 수 있으므로, 적절히 잘라서 사용자가 수정하게끔 유도
+            const cleanText = extractedText.replace(/[\n\r]+/g, ' ').trim();
+            
+            // 간단하게 첫 20자 정도만 가져와서 검색창에 넣어주고 사용자가 수정하게 함
+            // 또는 추출된 단어 중 가장 빈도수가 높거나 의미 있는 단어를 찾는 로직이 필요하지만,
+            // 여기서는 일단 전체 텍스트를 검색창에 넣어주고 사용자가 불필요한 부분을 지우도록 안내하는 것이 현실적입니다.
+            productNameInput.value = cleanText.substring(0, 50); // 너무 길면 50자까지만
+            
+            loadingMsg.innerText = '분석 완료! 검색어를 확인하고 수정해 주세요.';
+            setTimeout(() => { loadingMsg.style.display = 'none'; }, 3000);
+            
+            alert(`사진에서 다음 글자를 찾았습니다:\n"${cleanText.substring(0, 100)}..."\n\n정확한 검색을 위해 검색창의 내용을 수정해 주세요.`);
+
+        } catch (error) {
+            console.error(error);
+            loadingMsg.innerText = '사진 분석에 실패했습니다.';
+            alert('사진을 읽을 수 없습니다. 더 선명한 사진을 사용해 보세요.');
+        }
+    }
+}
+
 async function searchProduct() {
     const query = document.getElementById('product-name').value.trim();
     const productInfoDiv = document.getElementById('product-info');
@@ -44,13 +92,14 @@ async function searchProduct() {
 
         const rows = parseCSV(data);
 
-        // 검색 로직: 상품명(4), 마스터코드(0), 상품바코드(1) 중 하나라도 일치하면 결과에 포함
+        // 검색 로직
         const results = rows.filter(row => {
             const masterCode = (row[0] || '').toLowerCase();
             const barcode = (row[1] || '').toLowerCase();
             const productName = (row[4] || '').toLowerCase();
             const searchTerm = query.toLowerCase();
 
+            // 검색어가 포함된 경우
             return productName.includes(searchTerm) || 
                    masterCode.includes(searchTerm) || 
                    barcode.includes(searchTerm);
@@ -62,7 +111,6 @@ async function searchProduct() {
             let html = `<h3>검색 결과: ${results.length}건</h3>`;
             results.forEach(product => {
                 const productName = product[4] || '상품명 없음';
-                // 구글 이미지 검색 URL 생성 (tbm=isch는 이미지 검색 탭 의미)
                 const googleImageSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(productName)}&tbm=isch`;
 
                 html += `

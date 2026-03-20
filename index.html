@@ -5,14 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>상품 정보 검색기</title>
     <link href='/style.css' rel='stylesheet'>
+    <!-- Tesseract.js (OCR 라이브러리) -->
+    <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
 </head>
 <body>
     <h1>상품 정보 검색 (Google Sheets 연동)</h1>
     <div class="search-container">
-        <label for="product-name">검색어:</label>
-        <input type="text" id="product-name" placeholder="상품명, 마스터코드, 바코드 입력 (Enter 가능)" />
-        <button id="search-button" onclick="searchProduct()">검색</button>
+        <div class="input-group">
+            <label for="product-name">검색어:</label>
+            <input type="text" id="product-name" placeholder="상품명, 마스터코드, 바코드 입력" />
+        </div>
+        <div class="button-group">
+            <button id="search-button" onclick="searchProduct()">검색</button>
+            <input type="file" id="image-upload" accept="image/*" style="display: none;" onchange="handleImageUpload(this)">
+            <button id="camera-button" onclick="document.getElementById('image-upload').click()">📷 사진으로 검색</button>
+        </div>
     </div>
+    <div id="loading-msg" style="display:none; text-align:center; color: #666;">사진 분석 중... 잠시만 기다려 주세요.</div>
     <div id="product-info"></div>
     <script defer type="text/javascript" src="/main.js"></script>
 </body>
