@@ -1,22 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Product Finder</title>
+    <title>상품 정보 검색기</title>
     <link href='/style.css' rel='stylesheet'>
 </head>
 <body>
-    <h1>Product Finder</h1>
-    <div>
-        <label for="product-name">Product Name:</label>
-        <input type="text" id="product-name" />
+    <h1>상품 정보 검색 (Google Sheets 연동)</h1>
+    <div class="search-container">
+        <label for="product-name">상품명:</label>
+        <input type="text" id="product-name" placeholder="검색할 상품명을 입력하세요" />
+        <button onclick="searchProduct()">검색</button>
     </div>
-    <div>
-        <label for="product-image">Product Image:</label>
-        <input type="file" id="product-image" accept="image/*" />
-    </div>
-    <button onclick="searchProduct()">Search</button>
     <div id="product-info"></div>
     <script defer type="text/javascript" src="/main.js"></script>
 </body>
