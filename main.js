@@ -46,6 +46,7 @@ async function searchProduct() {
             let html = `<h3>검색 결과: ${results.length}건</h3>`;
             results.forEach((product, index) => {
                 const name = product[4] || '-';
+                const masterCode = product[0] || '';
                 const barcodeNum = product[1] || '';
                 const googleImageSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(name)}&tbm=isch`;
                 
@@ -53,14 +54,15 @@ async function searchProduct() {
                     <div class="product-card">
                         <div class="product-details">
                             <p><strong>상품명:</strong> ${name}</p>
-                            <p><strong>마스터코드:</strong> ${product[0] || '-'}</p>
+                            <p><strong>마스터코드:</strong> ${masterCode || '-'}</p>
                             <p><strong>상품 바코드:</strong> ${barcodeNum || '-'}</p>
                             <p><strong>온도대:</strong> ${product[2] || '-'}</p>
                             <p><strong>구분:</strong> ${product[3] || '-'}</p>
                         </div>
                         <div class="product-actions">
                             <a href="${googleImageSearchUrl}" target="_blank" class="image-search-btn">🖼️ 이미지 검색</a>
-                            <button onclick="openBarcode('${barcodeNum}')" class="barcode-view-btn">🏷️ 상품 바코드</button>
+                            <!-- 바코드 없으면 마스터코드 전달 -->
+                            <button onclick="openBarcode('${barcodeNum}', '${masterCode}')" class="barcode-view-btn">🏷️ 상품 바코드</button>
                         </div>
                     </div><hr>`;
             });
@@ -73,21 +75,23 @@ async function searchProduct() {
 }
 
 // 바코드 모달 열기 함수
-function openBarcode(barcodeNum) {
-    if (!barcodeNum || barcodeNum === '-') {
-        alert('바코드 정보가 없습니다.');
+function openBarcode(barcodeNum, masterCode) {
+    // 바코드가 없거나 '-'이면 마스터코드 사용
+    let codeToUse = (barcodeNum && barcodeNum !== '-') ? barcodeNum : masterCode;
+    
+    if (!codeToUse || codeToUse === '-') {
+        alert('바코드 및 마스터코드 정보가 없습니다.');
         return;
     }
+    
     const modal = document.getElementById('barcode-modal');
     const modalImg = document.getElementById('modal-barcode-img');
     
     // bwip-js API를 통한 바코드 생성 URL
-    const barcodeImgUrl = `https://bwipjs-api.metafloor.com/?bcid=code128&text=${encodeURIComponent(barcodeNum)}&scale=3&rotate=N&includetext`;
+    const barcodeImgUrl = `https://bwipjs-api.metafloor.com/?bcid=code128&text=${encodeURIComponent(codeToUse)}&scale=3&rotate=N&includetext`;
     
     modalImg.src = barcodeImgUrl;
     modal.style.display = 'block';
-    
-    // 바디 스크롤 방지 (선택 사항)
     document.body.style.overflow = 'hidden';
 }
 
@@ -95,8 +99,6 @@ function openBarcode(barcodeNum) {
 function closeBarcode() {
     const modal = document.getElementById('barcode-modal');
     modal.style.display = 'none';
-    
-    // 바디 스크롤 복구
     document.body.style.overflow = 'auto';
 }
 

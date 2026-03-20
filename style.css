@@ -108,7 +108,7 @@ hr {
     margin: 0;
 }
 
-/* 모달 오버레이 (반투명 회색 배경) */
+/* 모달 오버레이 */
 .modal-overlay {
     display: none;
     position: fixed;
@@ -116,51 +116,50 @@ hr {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(128, 128, 128, 0.7); /* 반투명 회색 */
+    background-color: rgba(128, 128, 128, 0.7);
     z-index: 1000;
 }
 
-/* 모달 컨텐츠 (중앙 배치, 가로 30% 세로 20%) */
+/* 모달 컨텐츠 (크기 축소: 가로 25vw, 세로 15vh) */
 .modal-content {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 30vw;
-    height: 20vh;
+    width: 25vw;
+    height: 15vh;
     background-color: white;
-    padding: 20px;
+    padding: 15px;
     border-radius: 8px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    min-width: 250px; /* 너무 작아지지 않도록 최소 너비 설정 */
-    min-height: 150px;
+    min-width: 220px; /* 최소 너비 약간 축소 */
+    min-height: 120px; /* 최소 높이 약간 축소 */
 }
 
 .modal-content img {
-    max-width: 90%;
-    max-height: 70%;
+    max-width: 95%;
+    max-height: 75%;
     object-fit: contain;
 }
 
 .modal-close-btn {
-    margin-top: 15px;
-    padding: 5px 15px;
+    margin-top: 10px;
+    padding: 4px 12px;
     background-color: #333;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 11px;
 }
 
-/* 모바일 대응 (화면이 작을 때 비율 조정) */
 @media (max-width: 768px) {
     .modal-content {
-        width: 80vw;
-        height: 25vh;
+        width: 75vw;
+        height: 20vh;
     }
 }
