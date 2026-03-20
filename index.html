@@ -12,28 +12,11 @@
     <div class="search-container">
         <!-- 텍스트 검색 영역 -->
         <div class="input-group">
-            <label for="product-name">직접 검색:</label>
+            <label for="product-name">검색어 입력:</label>
             <input type="text" id="product-name" placeholder="상품명, 마스터코드, 바코드 입력" />
         </div>
         <div class="button-group">
             <button id="search-button" onclick="searchProduct()">검색</button>
-        </div>
-        
-        <hr class="mobile-divider">
-
-        <!-- 구글 이미지 검색 영역 -->
-        <div class="image-search-group">
-            <label>사진으로 검색 (구글 렌즈):</label>
-            <form id="google-image-search-form" action="https://www.google.com/searchbyimage/upload" method="POST" enctype="multipart/form-data" target="_blank">
-                <!-- 파일 선택 시 자동으로 폼이 제출되도록 수정 -->
-                <input type="file" name="encoded_image" id="image-upload" accept="image/*" style="display: none;">
-                <button type="button" id="camera-button" onclick="triggerImageSearch()">
-                    📷 사진 선택하여 구글에서 찾기
-                </button>
-            </form>
-            <p id="image-loading-msg" style="display:none; font-size: 12px; color: #4285f4; margin-top: 5px;">
-                구글로 이미지를 전송 중입니다. 새 창이 열리지 않으면 팝업 차단을 확인해 주세요.
-            </p>
         </div>
     </div>
 

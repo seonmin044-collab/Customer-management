@@ -9,30 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-
-    // 사진 검색 input 이벤트 리스너 추가
-    const imageInput = document.getElementById('image-upload');
-    if (imageInput) {
-        imageInput.addEventListener('change', function() {
-            if (this.files && this.files[0]) {
-                const loadingMsg = document.getElementById('image-loading-msg');
-                if (loadingMsg) loadingMsg.style.display = 'block';
-                
-                // 폼 수동 제출
-                document.getElementById('google-image-search-form').submit();
-                
-                // 전송 후 안내 문구 변경
-                setTimeout(() => {
-                    if (loadingMsg) loadingMsg.innerText = '구글 검색 결과창이 열렸습니다. (새 창 확인)';
-                }, 2000);
-            }
-        });
-    }
 });
-
-function triggerImageSearch() {
-    document.getElementById('image-upload').click();
-}
 
 async function searchProduct() {
     const query = document.getElementById('product-name').value.trim();
@@ -54,8 +31,6 @@ async function searchProduct() {
         if (!response.ok) throw new Error('데이터 접근 실패');
 
         const data = await response.text();
-        if (data.includes('<!DOCTYPE html>')) throw new Error('시트 비공개 상태');
-
         const rows = parseCSV(data);
         const results = rows.filter(row => {
             const masterCode = (row[0] || '').toLowerCase();
@@ -69,20 +44,31 @@ async function searchProduct() {
             productInfoDiv.innerHTML = `<p>'${query}'에 대한 결과가 없습니다.</p>`;
         } else {
             let html = `<h3>검색 결과: ${results.length}건</h3>`;
-            results.forEach(product => {
+            results.forEach((product, index) => {
                 const name = product[4] || '-';
+                const barcodeNum = product[1] || '';
                 const googleImageSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(name)}&tbm=isch`;
+                
+                // 바코드 이미지 URL (bwip-js API)
+                const barcodeImgUrl = `https://bwipjs-api.metafloor.com/?bcid=code128&text=${encodeURIComponent(barcodeNum)}&scale=3&rotate=N&includetext`;
+
                 html += `
                     <div class="product-card">
                         <div class="product-details">
                             <p><strong>상품명:</strong> ${name}</p>
                             <p><strong>마스터코드:</strong> ${product[0] || '-'}</p>
-                            <p><strong>상품 바코드:</strong> ${product[1] || '-'}</p>
+                            <p><strong>상품 바코드:</strong> ${barcodeNum || '-'}</p>
                             <p><strong>온도대:</strong> ${product[2] || '-'}</p>
                             <p><strong>구분:</strong> ${product[3] || '-'}</p>
+                            
+                            <!-- 바코드 이미지가 들어갈 영역 (기본적으로 숨김) -->
+                            <div id="barcode-display-${index}" class="barcode-display" style="display:none; margin-top: 10px;">
+                                <img src="${barcodeImgUrl}" alt="Barcode Image" style="max-width: 100%; border: 1px solid #ddd; padding: 5px;">
+                            </div>
                         </div>
                         <div class="product-actions">
                             <a href="${googleImageSearchUrl}" target="_blank" class="image-search-btn">🖼️ 이미지 검색</a>
+                            <button onclick="toggleBarcode(${index})" class="barcode-view-btn">🏷️ 상품 바코드</button>
                         </div>
                     </div><hr>`;
             });
@@ -90,7 +76,17 @@ async function searchProduct() {
         }
     } catch (error) {
         console.error(error);
-        productInfoDiv.innerHTML = '<p style="color: red;">검색 중 오류가 발생했습니다. 구글 시트 공유 설정을 확인하세요.</p>';
+        productInfoDiv.innerHTML = '<p style="color: red;">오류 발생. 구글 시트 공유 설정을 확인하세요.</p>';
+    }
+}
+
+// 바코드 이미지 토글 함수
+function toggleBarcode(index) {
+    const display = document.getElementById(`barcode-display-${index}`);
+    if (display.style.display === 'none') {
+        display.style.display = 'block';
+    } else {
+        display.style.display = 'none';
     }
 }
 
