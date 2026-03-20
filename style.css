@@ -29,7 +29,7 @@ input[type="text"] {
     border-radius: 4px;
 }
 
-button {
+button#search-button {
     padding: 10px 20px;
     background-color: #28a745;
     color: white;
@@ -38,7 +38,7 @@ button {
     cursor: pointer;
 }
 
-button:hover {
+button#search-button:hover {
     background-color: #218838;
 }
 
@@ -50,7 +50,14 @@ button:hover {
 }
 
 .product-card {
-    padding: 10px 0;
+    padding: 15px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.product-details {
+    flex: 1;
 }
 
 .product-card p {
@@ -61,4 +68,30 @@ button:hover {
 
 .product-card strong {
     color: #333;
+}
+
+.product-actions {
+    margin-left: 20px;
+}
+
+.image-search-btn {
+    display: inline-block;
+    padding: 8px 15px;
+    background-color: #4285f4;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: bold;
+    transition: background-color 0.2s;
+}
+
+.image-search-btn:hover {
+    background-color: #357ae8;
+}
+
+hr {
+    border: 0;
+    border-top: 1px solid #eee;
+    margin: 0;
 }

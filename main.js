@@ -1,12 +1,14 @@
 // 엔터 키 입력 처리
 document.addEventListener('DOMContentLoaded', () => {
     const input = document.getElementById('product-name');
-    input.addEventListener('keypress', (event) => {
-        if (event.key === 'Enter') {
-            event.preventDefault();
-            searchProduct();
-        }
-    });
+    if (input) {
+        input.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                searchProduct();
+            }
+        });
+    }
 });
 
 async function searchProduct() {
@@ -42,7 +44,7 @@ async function searchProduct() {
 
         const rows = parseCSV(data);
 
-        // 검색 로직 확장: 상품명(4), 마스터코드(0), 상품바코드(1) 중 하나라도 일치하면 결과에 포함
+        // 검색 로직: 상품명(4), 마스터코드(0), 상품바코드(1) 중 하나라도 일치하면 결과에 포함
         const results = rows.filter(row => {
             const masterCode = (row[0] || '').toLowerCase();
             const barcode = (row[1] || '').toLowerCase();
@@ -59,13 +61,24 @@ async function searchProduct() {
         } else {
             let html = `<h3>검색 결과: ${results.length}건</h3>`;
             results.forEach(product => {
+                const productName = product[4] || '상품명 없음';
+                // 구글 이미지 검색 URL 생성 (tbm=isch는 이미지 검색 탭 의미)
+                const googleImageSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(productName)}&tbm=isch`;
+
                 html += `
                     <div class="product-card">
-                        <p><strong>상품명:</strong> ${product[4] || '-'}</p>
-                        <p><strong>마스터코드:</strong> ${product[0] || '-'}</p>
-                        <p><strong>상품 바코드:</strong> ${product[1] || '-'}</p>
-                        <p><strong>온도대:</strong> ${product[2] || '-'}</p>
-                        <p><strong>구분:</strong> ${product[3] || '-'}</p>
+                        <div class="product-details">
+                            <p><strong>상품명:</strong> ${productName}</p>
+                            <p><strong>마스터코드:</strong> ${product[0] || '-'}</p>
+                            <p><strong>상품 바코드:</strong> ${product[1] || '-'}</p>
+                            <p><strong>온도대:</strong> ${product[2] || '-'}</p>
+                            <p><strong>구분:</strong> ${product[3] || '-'}</p>
+                        </div>
+                        <div class="product-actions">
+                            <a href="${googleImageSearchUrl}" target="_blank" class="image-search-btn">
+                                🖼️ 이미지 검색
+                            </a>
+                        </div>
                     </div>
                     <hr>
                 `;
