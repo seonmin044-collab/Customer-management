@@ -137,7 +137,7 @@ hr {
     align-items: center;
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     min-width: 180px; /* 가로 최소 크기 축소 */
-    min-height: 250px; /* 세로 최소 크기 확대 */
+    min-height: 220px; /* 세로 최소 크기 확대 */
 }
 
 .modal-content img {
