@@ -22,6 +22,14 @@
 
     <div id="product-info"></div>
 
+    <!-- 바코드 모달 오버레이 -->
+    <div id="barcode-modal" class="modal-overlay" onclick="closeBarcode()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <img id="modal-barcode-img" src="" alt="Barcode Image">
+            <button class="modal-close-btn" onclick="closeBarcode()">닫기</button>
+        </div>
+    </div>
+
     <script defer type="text/javascript" src="/main.js"></script>
 </body>
 </html>

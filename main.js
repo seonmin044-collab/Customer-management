@@ -49,9 +49,6 @@ async function searchProduct() {
                 const barcodeNum = product[1] || '';
                 const googleImageSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(name)}&tbm=isch`;
                 
-                // 바코드 이미지 URL (bwip-js API)
-                const barcodeImgUrl = `https://bwipjs-api.metafloor.com/?bcid=code128&text=${encodeURIComponent(barcodeNum)}&scale=3&rotate=N&includetext`;
-
                 html += `
                     <div class="product-card">
                         <div class="product-details">
@@ -60,15 +57,10 @@ async function searchProduct() {
                             <p><strong>상품 바코드:</strong> ${barcodeNum || '-'}</p>
                             <p><strong>온도대:</strong> ${product[2] || '-'}</p>
                             <p><strong>구분:</strong> ${product[3] || '-'}</p>
-                            
-                            <!-- 바코드 이미지가 들어갈 영역 (기본적으로 숨김) -->
-                            <div id="barcode-display-${index}" class="barcode-display" style="display:none; margin-top: 10px;">
-                                <img src="${barcodeImgUrl}" alt="Barcode Image" style="max-width: 100%; border: 1px solid #ddd; padding: 5px;">
-                            </div>
                         </div>
                         <div class="product-actions">
                             <a href="${googleImageSearchUrl}" target="_blank" class="image-search-btn">🖼️ 이미지 검색</a>
-                            <button onclick="toggleBarcode(${index})" class="barcode-view-btn">🏷️ 상품 바코드</button>
+                            <button onclick="openBarcode('${barcodeNum}')" class="barcode-view-btn">🏷️ 상품 바코드</button>
                         </div>
                     </div><hr>`;
             });
@@ -80,14 +72,32 @@ async function searchProduct() {
     }
 }
 
-// 바코드 이미지 토글 함수
-function toggleBarcode(index) {
-    const display = document.getElementById(`barcode-display-${index}`);
-    if (display.style.display === 'none') {
-        display.style.display = 'block';
-    } else {
-        display.style.display = 'none';
+// 바코드 모달 열기 함수
+function openBarcode(barcodeNum) {
+    if (!barcodeNum || barcodeNum === '-') {
+        alert('바코드 정보가 없습니다.');
+        return;
     }
+    const modal = document.getElementById('barcode-modal');
+    const modalImg = document.getElementById('modal-barcode-img');
+    
+    // bwip-js API를 통한 바코드 생성 URL
+    const barcodeImgUrl = `https://bwipjs-api.metafloor.com/?bcid=code128&text=${encodeURIComponent(barcodeNum)}&scale=3&rotate=N&includetext`;
+    
+    modalImg.src = barcodeImgUrl;
+    modal.style.display = 'block';
+    
+    // 바디 스크롤 방지 (선택 사항)
+    document.body.style.overflow = 'hidden';
+}
+
+// 바코드 모달 닫기 함수
+function closeBarcode() {
+    const modal = document.getElementById('barcode-modal');
+    modal.style.display = 'none';
+    
+    // 바디 스크롤 복구
+    document.body.style.overflow = 'auto';
 }
 
 function parseCSV(data) {
