@@ -10,11 +10,11 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function searchProduct() {
-    const productName = document.getElementById('product-name').value.trim();
+    const query = document.getElementById('product-name').value.trim();
     const productInfoDiv = document.getElementById('product-info');
 
-    if (!productName) {
-        productInfoDiv.innerHTML = '<p style="color: red;">상품명을 입력해 주세요.</p>';
+    if (!query) {
+        productInfoDiv.innerHTML = '<p style="color: red;">검색어를 입력해 주세요.</p>';
         return;
     }
 
@@ -22,7 +22,6 @@ async function searchProduct() {
 
     const sheetId = '12XqPpuZdn1fN_IDglhuJsPGqZMa6i1psELEgB5dekoo';
     const gid = '0';
-    // export URL (CSV 형식)
     const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
 
     try {
@@ -37,22 +36,26 @@ async function searchProduct() {
 
         const data = await response.text();
         
-        // HTML이 반환된 경우 (로그인 페이지 등) 처리
         if (data.includes('<!DOCTYPE html>')) {
             throw new Error('스프레드시트가 비공개 상태입니다. 구글 시트 우측 상단 [공유] 버튼을 눌러 "링크가 있는 모든 사용자"에게 보기 권한을 주세요.');
         }
 
         const rows = parseCSV(data);
 
-        // A: 마스터코드(0), B: 상품바코드(1), C: 온도대(2), D: 1P/3P(3), E: 상품명(4)
+        // 검색 로직 확장: 상품명(4), 마스터코드(0), 상품바코드(1) 중 하나라도 일치하면 결과에 포함
         const results = rows.filter(row => {
-            if (!row[4]) return false;
-            // 대소문자 구분 없이 검색 (선택 사항)
-            return row[4].toLowerCase().includes(productName.toLowerCase());
+            const masterCode = (row[0] || '').toLowerCase();
+            const barcode = (row[1] || '').toLowerCase();
+            const productName = (row[4] || '').toLowerCase();
+            const searchTerm = query.toLowerCase();
+
+            return productName.includes(searchTerm) || 
+                   masterCode.includes(searchTerm) || 
+                   barcode.includes(searchTerm);
         });
 
         if (results.length === 0) {
-            productInfoDiv.innerHTML = `<p>'${productName}'에 대한 검색 결과가 없습니다.</p>`;
+            productInfoDiv.innerHTML = `<p>'${query}'에 대한 검색 결과가 없습니다.</p>`;
         } else {
             let html = `<h3>검색 결과: ${results.length}건</h3>`;
             results.forEach(product => {
@@ -83,12 +86,9 @@ async function searchProduct() {
 function parseCSV(data) {
     const rows = [];
     const lines = data.split(/\r?\n/);
-    
-    // 첫 번째 줄은 헤더이므로 i=1부터 시작
     for (let i = 1; i < lines.length; i++) {
         const line = lines[i].trim();
         if (line) {
-            // CSV의 쉼표와 따옴표를 제대로 처리하기 위한 정규식
             const columns = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(col => {
                 return col.replace(/^"|"$/g, '').trim();
             });
